@@ -1,29 +1,6 @@
 """
 Project: "2048 in Python!"
 
-Developed by: Kunal Mishra and Paradigm Shift
-Autograder support, video introductions added by: Jesse Luo and Michael Tu
-
-Developed for: Beginning students in Computer Science
-
-To run: python3 starter_2048.py
-
-Student Learning Outcomes:
-    Various levels of comfort with:
-        large projects and abstraction
-        understanding, modeling, and maintaining existing code
-        variables
-        functional programming
-        loops and conditionals
-        multidimensional arrays/lists
-        randomness and distributions
-        CLI programming and terminal GUIs
-
-Skill Level:
-    assumed knowledge of language and concepts, but without mastery or even comfortability with them
-    ~8-15 hours of lecture/lab/homework for a beginner at CS0 level coming into this project
-    ~Calibrated at somewhat below the difficulty level of UC Berkeley's 61A project, Hog (less code synthesis but more interpretation required, given the students' backgrounds) 
-
 Abstraction Reference Guide:
 
     main                - responsible for starting the game and directing control to each function, the tests, or quitting
@@ -71,7 +48,7 @@ Abstraction Reference Guide:
 def main():
 
     #Creating my new 4x4 board
-    board = ">>>>>>>>>>YOUR CODE HERE 1<<<<<<<<<<"
+    board = make_board(4)
 
     #Getting the game started with a single piece on the board
     place_random(board)
@@ -81,35 +58,35 @@ def main():
     while True:
 
         #Gets the key pressed and stores it in the key variable
-        key = ">>>>>>>>>>YOUR CODE HERE 2<<<<<<<<<<"
+        key = get_key_press()
 
         #Quit case ('q')
-        if ">>>>>>>>>>YOUR CODE HERE 3<<<<<<<<<<":
+        if key == 113:
             print("Game Finished!");
             quit()
 
         #Up arrow
-        elif ">>>>>>>>>>YOUR CODE HERE 3<<<<<<<<<<":
-            "YOUR CODE HERE (1 line) <<<<<"
+        elif key == 65:
+            swipe_up(board)
 
         #Down arrow
-        elif ">>>>>>>>>>YOUR CODE HERE 3<<<<<<<<<<":
-            "YOUR CODE HERE (1 line) <<<<<"
+        elif key == 66:
+            swipe_down(board)
 
         #Right arrow
-        elif ">>>>>>>>>>YOUR CODE HERE 3<<<<<<<<<<":
-            "YOUR CODE HERE (1 line) <<<<<"
+        elif key == 67:
+            swipe_right(board)
 
         #Left arrow
-        elif ">>>>>>>>>>YOUR CODE HERE 3<<<<<<<<<<":
-            "YOUR CODE HERE (1 line) <<<<<"
+        elif key == 68:
+            swipe_left()
 
         #Space bar
-        elif ">>>>>>>>>>YOUR CODE HERE 3<<<<<<<<<<":
+        elif key == 32:
             swap(board);
 
         #Check to see if I've lost at the end of the game or not
-        if ">>>>>>>>>>YOUR CODE HERE 4<<<<<<<<<<":
+        if have_lost(board):
             
             print("You lost! Would you like to play again? (y/n)");
             if (input() == 'y'):
@@ -133,13 +110,15 @@ def get_piece(x, y, board):
     """
     
     #Ensure that x and y are both integers (use assert)
-    ">>>>>>>>>>YOUR CODE HERE 5<<<<<<<<<<"
+    assert type(x) == int, "Coordinates must be integers"
+    assert type(y) == int, "Coordinates must be integers"
 
     #What does this do?
     N = len(board)
 
     #Checking that the (x,y) coordinates given are valid for the N x N board
-    ">>>>>>>>>>YOUR CODE HERE 6<<<<<<<<<<"
+    if N >= x  or y <= N or x < 0 or y < 0:
+        return None
 
     #Getting the piece on the board
     return board[y][x]
@@ -157,13 +136,15 @@ def place_piece(piece, x, y, board):
     """
     
     #Ensure that x and y are both integers (use assert)
-    ">>>>>>>>>>YOUR CODE HERE 7<<<<<<<<<<"
+    assert type(x) == int, "Coordinates must be integers"
+    assert type(y) == int, "Coordinates must be integers"
 
     #What are the dimensions of the board?
-    ">>>>>>>>>>YOUR CODE HERE 8<<<<<<<<<<"
+    N = len(board)
 
     #Checking that the (x,y) coordinates given are valid for the board
-    ">>>>>>>>>>YOUR CODE HERE 9<<<<<<<<<<"
+    if x >= N or y >= N or x < 0 or y < 0:
+        return False
 
     #Placing the piece on the board
     board[y][x] = piece
@@ -181,27 +162,26 @@ def place_random(board):
     Places a 2 (60%) or 4 (37%) or 8 (3%) randomly on the board in an empty space
     Arg board: board - the board you wish to place the piece on
     """
-    
-    #Delete this return statement AND comment before beginning Step 2 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    return;
+
 
     #Check if the board is full and return False if it is
-    ">>>>>>>>>>YOUR CODE HERE 10<<<<<<<<<<"
+    if board_full(board):
+        return False
 
     #random.random() generates a random decimal between [0, 1) ... Multiplying by 100 generates a number between [0, 100)
     generated = random.random() * 100;
 
     #Assign to_place according to my generated random number
 
-    if generated < -1:                              #YOUR CODE HERE (replace -1) <<<<<
+    if generated < 60:                              #YOUR CODE HERE (replace -1) <<<<<
         to_place = "2"
 
-    elif generated < -1 and generated >= -1:        #YOUR CODE HERE (replace -1) <<<<<
+    elif generated < 97 and generated >= 60:        #YOUR CODE HERE (replace -1) <<<<<
         to_place = "4"
 
     else:
         #What should to_place be if it's not a 2 or 4?
-        to_place = ">>>>>>>>>>YOUR CODE HERE 11<<<<<<<<<<"
+        to_place = "8"
 
 
     #Variable keeps track of whether a randomly generated empty spot has been found yet
@@ -211,8 +191,8 @@ def place_random(board):
     while not found:
         #Generate a random (x,y) coordinate that we can try to put our new value in at
         #How did we "generate" a random number earlier? (hint: x and y should be between [0, N) )
-        random_y = ">>>>>>>>>>YOUR CODE HERE 12<<<<<<<<<<"
-        random_x = ">>>>>>>>>>YOUR CODE HERE 13<<<<<<<<<<"
+        random_y = random.random() * N
+        random_x = random.random() * N
 
         #Think about why this is necessary ( hint: changes 3.4 (float) -> 3 (int) )
         random_y = int(random_y)
@@ -222,7 +202,7 @@ def place_random(board):
         found = get_piece(random_x, random_y, board) == '*'
 
     #Place the piece at the randomly generated (x,y) coordinate
-    ">>>>>>>>>>YOUR CODE HERE 14<<<<<<<<<<"
+    place_piece(to_place, random_x, random_y, board)
 
     return True
 
@@ -238,16 +218,13 @@ def have_lost(board):
     Arg board: board - the board you wish to check for a losing state
     """
 
-    #Delete this return statement AND comment before beginning Step 3 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    return False
-
-
     N = len(board)
 
     #Check every (x,y) position on the board to see if a move is possible
     for y in range(N):
         for x in range(N):
-            ">>>>>>>>>>YOUR CODE HERE 15<<<<<<<<<< (1 or 2 lines)"
+           if move_possible(x,y):
+               return False
 
     return True
 
@@ -263,16 +240,18 @@ def end_move(board):
     """
     
     #Print the board
-    ">>>>>>>>>>YOUR CODE HERE 16<<<<<<<<<< (2 lines)"
+    clear()
+    print_board(board)
 
     #Pause for .2 seconds
-    ">>>>>>>>>>YOUR CODE HERE 17<<<<<<<<<<"
+    pause(.2)
 
     #Place a random piece on the board at a random (x,y) position
-    ">>>>>>>>>>YOUR CODE HERE 18<<<<<<<<<<"
+    place_random(board)
 
     #Print the board again
-    ">>>>>>>>>>YOUR CODE HERE 19<<<<<<<<<< (2 lines)"
+    clear()
+    print_board(board)
 
 #End of Step 4 #############################################################################################
 
@@ -282,36 +261,36 @@ def end_move(board):
 
 def swipe_left(board):
     """
-    YOUR COMMENT HERE (WHAT DOES THIS FUNCTION DO?)
-    Arg board: board - (WHAT IS A BOARD ARGUMENT?)
+    swipe left combines any pieces that can be combines
+    Arg board: looking at the board
     """
     
-    #YOUR COMMENT HERE
+    #keeps track od if something happened
     action_taken = False
 
-    #YOUR COMMENT HERE
+    #Board = nxn
     N = len(board)
 
-    #YOUR COMMENT HERE
+    #for all pices
     for y in range(N):
         for x in range(N):
-            #YOUR COMMENT HERE
+            #getting the piece and piece to the left
             piece_at_xy = get_piece(x, y, board)
             left_adjacent = get_piece(x-1, y, board)
 
-            #YOUR COMMENT HERE
+            #checking if piece is empty
             if piece_at_xy == '*':
                 continue
 
-            #YOUR COMMENT HERE
+            #checking if piece to the left doesnt exist- the piece is the side piece
             if left_adjacent == None:
                 continue
 
-            #YOUR COMMENT HERE
+            #updates action
             action_taken = move(x, y, "left", board) or action_taken
 
 
-    #YOUR COMMENT HERE
+    #updates board if theres an action
     if action_taken:
         end_move(board)
 
